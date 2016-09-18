@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>hello phaser!</title>
+        <script src="//cdn.jsdelivr.net/phaser/2.5.0/phaser.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+
+	<div class="windowScaleSlider">
+	<span id="windowScale">Window scale: 1.0</span>
+		<input id="WSslider" type="range" min="20" max="30" value="20" onchange="showValue1(this.value)" />
+		<script type="text/javascript">
+		function showValue1(newValue)
+		{
+			document.getElementById("windowScale").innerHTML="Window scale: "+newValue/20+"";
+			document.getElementById("WSslider").value = newValue;
+			scale = document.getElementById("WSslider").value / 20;
+			resize();
+		}
+		</script>
+	</div>
+
+<div style="position: relative; left: 0px; top: 100px; width: 247px; height: 88px; overflow: hidden; -webkit-user-select: none; "></div>
+
+	<script src="js/guid.js"></script>
+	<script src="js/resize.js"></script>
+	<script src="js/gameobject.js"></script>
+	<script src="js/enemy.js"></script>
+	<script src="js/stinger.js"></script>
+	<script src="js/breaker.js"></script>
+	<script src="js/asteroid.js"></script>
+	<script src="js/player.js"></script>
+	<script src="js/powerup.js"></script>
+	<script src="js/main.js"></script>
+
+    </body>
+</html>
