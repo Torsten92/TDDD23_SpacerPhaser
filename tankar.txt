@@ -1,0 +1,43 @@
+Asteroids float around, being a nuisance.
+Stinger (enemy):
+	- The most common enemy.
+	- Moves in circles around player.
+	- May sometimes move in quick for a burst and then move away. Cowardly, may hide behind asteroids and other objects.
+	- Fires weak lasers.
+
+Breaker (Enemy):
+	- Slow moving but tough.
+	- Moves slowly towards player.
+	- Fires missiles. May sometimes charge up visually, before firing a laser beam.
+
+Powerups:
+	Most powerful ones spawn randomly on the map. Others spawn upon enemy kill.
+	- HP boost. Heals a small amount of hp. dropped in groups. (floating outwards)
+	- HP kit. Resores health to full.
+	- Laser upgrade. Upgrades lasers for a short time (10 seconds. stacks).
+	- Engine booster. Allows hyperdrive using shift and up. stacks in speed. lasts for 10 seconds.
+	- Shield upgrade. Gives player a durable shield that recharges when not taking damage. stackable. 
+	  Lasts for 30 seconds.
+
+Player hp: 100
+Shield: 50*level. Regenerates 1%/s when not taking damage for 2 seconds.
+Engine booster: 1+level times speed when using it.
+Laser upgrade: Attack cooldown = 0.3 - max(level*0.05, 0.2)
+
+Enemies spawn outside camera bounds and generally moves towards player in some way.
+Max 20 enemies at a time.
+~1% per frame to spawn an enemy at start. after 1 minute it's ~2%. Increases linearly.
+Stingers spawn rate is high at start and decreases with time.
+Breakers spawn rate is low at start and increases with time.
+Time variable spawn rate: 
+	- Linearly there is no upper limit. Player will lose. 
+	- Exponentially: max 300% (at 9min+: Stinger = 33%, Breaker = 300%)
+Stinger spawn rate: max(time / 60, 1) * 0.01 * max(min(1/srqt(time/60), 0.33), 2)
+Breaker spawn rate: max(time / 60, 1) * 0.005 * max(sqrt(time/60), 3)
+
+Max 10 asteroids at a time.
+asteroid spawn rate: 0.01
+When object collides with another object, both take equal damage (loop 1 dmg
+at a time until one reaches 0)
+
+When any object is more than double screen dimensions away from player, it is deallocated.

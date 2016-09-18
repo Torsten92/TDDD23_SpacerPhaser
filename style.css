@@ -1,0 +1,8 @@
+div.windowScaleSlider {
+	position: absolute;
+	top: 25px;
+	left: 1%;
+	width: 12%;
+	min-width: 120px;
+	height: 100px;
+}
