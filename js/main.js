@@ -72,7 +72,7 @@ function spacerPhaser() {
 	function create() {
 
 		background = game.add.tileSprite(0, 0, 1920, 1920, 'background');
-		game.physics.startSystem(Phaser.Physics.ARCADE);
+		game.physics.startSystem(Phaser.Physics.P2JS);
 
 		gameObjects = new Array();
 		gameObjects[0] = new Player(game);

@@ -7,7 +7,7 @@ class GameObject{
 
    		this.object = game.add.sprite(0, 0, this.type);
 		game.physics.arcade.enable(this.object); 
-		game.physics.enable(this.object, Phaser.Physics.ARCADE);
+		game.physics.enable(this.object, Phaser.Physics.P2JS);
 		this.object.body.maxVelocity.set(200);
 		this.object.anchor.set(0.5);
 		this.object.body.collideWorldBounds = false;
