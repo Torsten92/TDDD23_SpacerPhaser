@@ -7,7 +7,7 @@ window.onload = function() {
 var game;
 
 //menu sprites that may need to be resized
-var hud, healthbar_back, healthbar_mid, healthbar_front;
+var hud, healthbar_back, healthbar_mid, healthbar_front, weapon_text, engine_text, shield_text;
 
 
 function spacerPhaser() {
@@ -32,6 +32,8 @@ function spacerPhaser() {
 		game.load.image('explosion','sprites/particles/explosion.png');
 		game.load.image('explosion_mini','sprites/particles/explosion_mini.png');
 		game.load.image('powerup_weapon','sprites/powerup_weapon.png');
+		game.load.image('powerup_engine','sprites/powerup_engine.png');
+		game.load.image('powerup_shield','sprites/powerup_shield.png');
 		game.load.image('powerup_health','sprites/powerup_health.png');
 		game.load.image('hud','sprites/menu/HUD.png');
 		game.load.image('healthbar_back','sprites/menu/healthbar_back.png');
@@ -151,12 +153,12 @@ function spacerPhaser() {
 			//do nothing
 		}
 		else if(state == STATES.INGAME) {
-
+			
 			game.world.wrap(player.object, 10);
 			game.world.setBounds(player.object.x - 960, player.object.y - 960, 1920, 1920);
 			
 			//scale healthbar to show damage taken
-			healthbar_mid.scale.setTo(player.hp/player.hpMax * scale, 1.0 * scale);
+			healthbar_mid.scale.x = player.hp/player.hpMax * scale, 1.0 * scale;
 
 			//create a parallax-like effect on background
 			var xBase = player.object.x - game.world.width / 2;
@@ -312,11 +314,17 @@ function spacerPhaser() {
 	function createPowerupChance(gameObject) {
 		if(Math.random() < 0.3) {
 			if(gameObject instanceof Enemy || gameObject instanceof Asteroid) {
-				var type = game.rnd.integerInRange(0, 1);
+				var type = game.rnd.integerInRange(0, 3);
 				if(type == 0) {
 					createPowerup('powerup_weapon', gameObject.object.x, gameObject.object.y);
 				}
 				if(type == 1) {
+					createPowerup('powerup_engine', gameObject.object.x, gameObject.object.y);
+				}
+				if(type == 2) {
+					createPowerup('powerup_shield', gameObject.object.x, gameObject.object.y);
+				}
+				if(type == 3) {
 					createPowerup('powerup_health', gameObject.object.x, gameObject.object.y);
 				}
 			}
@@ -341,17 +349,17 @@ function spacerPhaser() {
 
 			if (cursors.up.isDown || buttonW.isDown) {
 				//console.log("player pos: " + player.object.x + ", " + player.object.y);
-				game.physics.arcade.accelerationFromRotation(player.object.rotation, 300, player.object.body.acceleration);
+				game.physics.arcade.accelerationFromRotation(player.object.rotation, 300+10*player.engineLevel, player.object.body.acceleration);
 			}
 			else {
 				player.object.body.acceleration.set(0);
 			}
 
 			if (cursors.left.isDown || buttonA.isDown) {
-				player.object.body.angularVelocity = -300;
+				player.object.body.angularVelocity = -300 - 10 * player.engineLevel;
 			}
 			else if (cursors.right.isDown || buttonD.isDown) {
-				player.object.body.angularVelocity = 300;
+				player.object.body.angularVelocity = 300 + 10 * player.engineLevel;
 			}
 			else {
 				player.object.body.angularVelocity = 0;
@@ -378,10 +386,16 @@ function spacerPhaser() {
 		healthbar_back = game.add.sprite(100, 552, 'healthbar_back');
 		healthbar_mid = game.add.sprite(100, 552, 'healthbar_mid');
 		healthbar_front = game.add.sprite(100, 552, 'healthbar_front');
+		weapon_text = game.add.text(500, 542, '', { font: "15px Arial", fill: "#ff0000" });
+		engine_text = game.add.text(500, 558, '', { font: "15px Arial", fill: "#ffff00" });
+		shield_text = game.add.text(500, 576, '', { font: "15px Arial", fill: "#0088ff" });
 		hud.fixedToCamera = true;
 		healthbar_back.fixedToCamera = true;
 		healthbar_mid.fixedToCamera = true;
 		healthbar_front.fixedToCamera = true;
+		weapon_text.fixedToCamera = true;
+		engine_text.fixedToCamera = true;
+		shield_text.fixedToCamera = true;
 	}
 
 	function setState(val) {
@@ -394,7 +408,12 @@ function spacerPhaser() {
 			healthbar_back.kill();
 			healthbar_mid.kill();
 			healthbar_front.kill();
-			player.setWeaponLevel(1);
+			player.setWeaponLevel(0);
+			player.setEngineLevel(0);
+			player.setShieldLevel(0);
+			weapon_text.text = "";
+			engine_text.text = "";
+			shield_text.text = "";
 
 			for(var id in gameObjects) {
 				gameObjects[id].object.kill();

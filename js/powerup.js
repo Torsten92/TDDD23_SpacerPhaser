@@ -48,6 +48,12 @@ class Powerup{
 					if(this.data.type == 'powerup_weapon') {
 						player.setWeaponLevel(player.weaponLevel + 1);
 					}
+					if(this.data.type == 'powerup_engine') {
+						player.setEngineLevel(player.engineLevel + 1);
+					}
+					if(this.data.type == 'powerup_shield') {
+						player.setShieldLevel(player.shieldLevel + 1);
+					}
 					else if(this.data.type == 'powerup_health') {
 						player.hp = Math.min(player.hp+100, player.hpMax);
 					}
