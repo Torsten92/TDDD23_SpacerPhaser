@@ -48,7 +48,19 @@ class Powerup{
 					if(this.data.type == 'powerup_weapon') {
 						player.setWeaponLevel(player.weaponLevel + 1);
 					}
-					else if(this.data.type == 'powerup_health') {
+					if(this.data.type == 'powerup_engine') {
+						player.setEngineLevel(player.engineLevel + 1);
+					}
+					if(this.data.type == 'powerup_shield') {
+						player.setShieldLevel(player.shieldLevel + 1);
+
+						//create shieldbar when player first gains shields
+						if(player.shieldLevel == 1) {
+							shieldbar_mid.reset(100*scale, 572*scale);
+							shieldbar_front.reset(100*scale, 572*scale);
+						}
+					}
+					else if(this.data.type == 'powerup_health' && player.hp > 0.0) {
 						player.hp = Math.min(player.hp+100, player.hpMax);
 					}
 
