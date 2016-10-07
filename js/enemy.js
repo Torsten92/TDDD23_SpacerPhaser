@@ -3,11 +3,13 @@ class Enemy extends GameObject {
 		super(game, index, type, hp);
 
 		this.update = function(game, gameObjects, player, bulletObjectCollision) {
-			for(var id in gameObjects) {
-				if(gameObjects[id].object.alive && this.laser instanceof Phaser.Weapon) {
-					game.physics.arcade.collide(this.laser.bullets, gameObjects[id].object, bulletObjectCollision, null, this);
+			if(!(this instanceof Destroyer)) {
+				for(var id in gameObjects) {
+					if(gameObjects[id].object.alive && this.laser instanceof Phaser.Weapon) {
+						game.physics.arcade.collide(this.laser.bullets, gameObjects[id].object, bulletObjectCollision, null, this);
+					}
+					game.physics.arcade.collide(this.laser.bullets, player.object, bulletObjectCollision, null, this);
 				}
-				game.physics.arcade.collide(this.laser.bullets, player.object, bulletObjectCollision, null, this);
 			}
 			this.activeState(player.object.x, player.object.y);
 		}

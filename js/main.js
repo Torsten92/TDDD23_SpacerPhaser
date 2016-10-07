@@ -23,6 +23,8 @@ function spacerPhaser() {
 		game.load.image('player','sprites/player.png');
 		game.load.image('stinger','sprites/stinger.png');
 		game.load.image('breaker','sprites/breaker.png');
+		game.load.image('destroyer','sprites/destroyer.png');
+		game.load.image('destroyer_cannon','sprites/destroyer_cannon.png');
 		game.load.image('asteroid','sprites/asteroid.png');
 		game.load.image('laser_red','sprites/laser_red.png');
 		game.load.image('laser_green','sprites/laser_green.png');
@@ -67,6 +69,7 @@ function spacerPhaser() {
 	var NUM_ASTEROIDS = 10;
 	var NUM_STINGERS = 10;
 	var NUM_BREAKERS = 5;
+	var NUM_DESTROYERS = 1;
 	var NUM_POWERUPS = 10;
 	var gameObjects; // contains all colliders in the scene
 	var powerups; // contains all powerups in the scene
@@ -145,10 +148,17 @@ function spacerPhaser() {
 			var temp = guid();
 			gameObjects[temp] = new Breaker(game, temp, makeParticles);
 			gameObjects[temp].laser.onFire.add(function() {
-				//gameObjects[temp].laserSide = gameObjects[temp].laserSide ? false : true;
-				audioMissileCounter = audioMissileCounter >= 9 ? 0 : audioMissileCounter+1;
-				audioMissile[audioMissileCounter].play();
+				audioLaserCounter = audioLaserCounter >= 9 ? 0 : audioLaserCounter+1;
+				audioLaser[audioLaserCounter].play();
 			});
+		}
+		for(var i = 0; i < NUM_DESTROYERS; i++) {
+			var temp = guid();
+			gameObjects[temp] = new Destroyer(game, temp);
+			//gameObjects[temp].laser.onFire.add(function() {
+			//	audioMissileCounter = audioMissileCounter >= 9 ? 0 : audioMissileCounter+1;
+			//	audioMissile[audioMissileCounter].play();
+			//});
 		}
 
 		//create all powerups
@@ -248,6 +258,7 @@ function spacerPhaser() {
 				createIngameText(dt, "Asteroid", 5, destroyedAsteroids);
 
 				if(Math.random() < 0.03) createObject(Asteroid, player.object.x, player.object.y);
+				if(Math.random() < 0.03) createObject(Destroyer, player.object.x, player.object.y);
 
 				if(destroyedAsteroids >= 5 && player.hp > 0.0) {
 					setState(STATES.VICTORY, true);
