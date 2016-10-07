@@ -179,7 +179,6 @@ function spacerPhaser() {
 			//do nothing
 		}
 		else if(state == STATES.INGAME) {
-			
 			game.world.wrap(player.object, 10);
 			game.world.setBounds(player.object.x - 960, player.object.y - 960, 1920, 1920);
 
@@ -200,6 +199,7 @@ function spacerPhaser() {
 			//handle per-object computations
 			for(var id in gameObjects) {
 				if(gameObjects[id].object.alive) {
+
 					//remove if out of bounds. Built in method was troublesome to use here.
 					if(gameObjects[id].object.x < player.object.x - 960 || 
 					   gameObjects[id].object.x > player.object.x + 960 ||
@@ -318,6 +318,30 @@ function spacerPhaser() {
 					setState(STATES.MENU);
 				}
 			}
+			else {
+				var angle = player.object.rotation;
+				var amount = length(player.object.body.velocity) / 10;
+				if(amount > 0) {
+					makeParticles('explosion_mini', 
+						player.object.x - Math.cos(angle)*12,
+						player.object.y - Math.sin(angle)*12,
+						1, amount
+					);
+					if(amount > 20) {
+						makeParticles('explosion_mini', 
+							player.object.x - Math.cos(angle)*10 + Math.sin(angle)*10,
+							player.object.y - Math.sin(angle)*10 - Math.cos(angle)*10,
+							1, amount / 20
+						);
+						makeParticles('explosion_mini', 
+							player.object.x - Math.cos(angle)*10 - Math.sin(angle)*10,
+							player.object.y - Math.sin(angle)*10 + Math.cos(angle)*10,
+							1, amount / 20
+						);
+					}
+				}
+
+			}
 		}
 		else if(state == STATES.VICTORY) {
 			victoryTimer -= dt;
@@ -330,6 +354,7 @@ function spacerPhaser() {
 		handleInput();
 	}
 
+
 	//Collision handling for bullets(lasers) and objects
 	function bulletObjectCollision(o1, o2) {
 		if(o2 instanceof Phaser.Bullet) {
@@ -338,19 +363,16 @@ function spacerPhaser() {
 			if(o2.key == 'laser_red') {
 				makeParticles('particle_red', o2.x, o2.y);
 				intensity = 10;
-				//gameObjects[o1.name].hp = gameObjects[o1.name].hp - 10;
 				gameObjects[o1.name].takeDamage(10);
 			}
 			if(o2.key == 'laser_green') {
 				makeParticles('particle_green', o2.x, o2.y);
 				intensity = 10;
-				//gameObjects[o1.name].hp = gameObjects[o1.name].hp - 10;
 				gameObjects[o1.name].takeDamage(10);
 			}
 			if(o2.key == 'missile') {
 				makeParticles('explosion', o2.x, o2.y, 30, 150);
 				intensity = 30;
-				//gameObjects[o1.name].hp = gameObjects[o1.name].hp - 30;
 				gameObjects[o1.name].takeDamage(30);
 			}
 
@@ -358,6 +380,7 @@ function spacerPhaser() {
 			if(gameObjects[o1.name].hp <= 0) {
 				o1.kill();
 				addObjectCounter(o1);
+
 				makeParticles('explosion', o1.x, o1.y, 150, 300);
 				createPowerupChance(gameObjects[o1.name]);
 			}
@@ -375,6 +398,7 @@ function spacerPhaser() {
 			//gameObjects[o2.name].hp -= 1;
 			gameObjects[o1.name].takeDamage(5);
 			gameObjects[o2.name].takeDamage(5);
+
 			intensity++;
 		}
 		if(gameObjects[o1.name] instanceof Player || gameObjects[o2.name] instanceof Player) {
@@ -383,12 +407,14 @@ function spacerPhaser() {
 		if(gameObjects[o1.name].hp <= 0) {
 			o1.kill();
 			addObjectCounter(o1);
+
 			makeParticles('explosion', o1.x, o1.y, 150, 300);
 			createPowerupChance(gameObjects[o1.name]);
 		}
 		if(gameObjects[o2.name].hp <= 0) {
 			o2.kill();
 			addObjectCounter(o2);
+
 			makeParticles('explosion', o2.x, o2.y, 150, 300);
 			createPowerupChance(gameObjects[o2.name]);
 		}
@@ -432,6 +458,7 @@ function spacerPhaser() {
 		}
 	}
 
+
 	//Create a new object of the specified type if there is an empty slot in the corresponding object pool
 	function createObject(type, playerX, playerY) {
 		for(var o in gameObjects) {
@@ -456,6 +483,7 @@ function spacerPhaser() {
 					createPowerup('powerup_weapon', gameObject.object.x, gameObject.object.y);
 				}
 				if(type == 1) {
+
 					createPowerup('powerup_engine', gameObject.object.x, gameObject.object.y);
 				}
 				if(type == 2) {
@@ -476,7 +504,6 @@ function spacerPhaser() {
 			}
 		}
 	}
-
 
 	// All game input is handled here. Separates menu- and ingame input handling in the same function.
 	function handleInput() {
