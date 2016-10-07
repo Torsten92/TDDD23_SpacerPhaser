@@ -1,3 +1,0 @@
-spacerPhaser.prototype.ingame = function() {
-	
-}

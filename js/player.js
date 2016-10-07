@@ -1,6 +1,6 @@
 class Player extends GameObject {
 	constructor(game) {
-		super(game, 0, 'player', 2000); //make invincible for development
+		super(game, 0, 'player', 200); //make invincible for development
 		this.laser = game.add.weapon(50, 'laser_red');
 		this.laser.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
 		this.laser.bulletSpeed = 600;
@@ -19,29 +19,32 @@ class Player extends GameObject {
 		
 		this.setWeaponLevel = function(val) {
 			
-			this.weaponLevel = Math.min(Math.max(val, 5), 10);
+			this.weaponLevel = Math.min(Math.max(val, 0), 10);
 			this.laser.bulletSpeed = 600 + 75 * this.weaponLevel;
 			this.laser.fireRate = 230 - 50 * Math.sqrt(this.weaponLevel); // goes from 230 to 71.9
 			this.laser.bulletAngleVariance = 0.2 * this.weaponLevel;
-			weapon_text.text = "Weapon Level: " + this.weaponLevel;
+			weapon_text.text = this.weaponLevel > 0 ? "Weapon Level: " + this.weaponLevel : "";
 		}
 
 		this.setEngineLevel = function(val) {
 			
 			this.engineLevel = Math.min(Math.max(val, 0), 10);
 			this.object.body.maxVelocity.set(200 + 10 * this.engineLevel);
-			engine_text.text = "Engine Level: " + this.engineLevel;
+			engine_text.text = this.engineLevel > 0 ? "Engine Level: " + this.engineLevel : "";
 		}
 
 
 		this.setShieldLevel = function(val) {
 			
 			this.shieldLevel = Math.min(Math.max(val, 0), 10);
-			shield_text.text = "Shield Level: " + this.shieldLevel;
+			shield_text.text = this.shieldLevel > 0 ? "Shield Level: " + this.shieldLevel : "";
 		}
 
 		this.spawn_properties = function(game) {
 			this.object.body.drag.set(50);
+			this.setWeaponLevel(weapon_level);
+			this.setEngineLevel(engine_level);
+			this.setShieldLevel(shield_level);
 		}
 	}
 
