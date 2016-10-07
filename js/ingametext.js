@@ -1,10 +1,11 @@
 var ingameText;
-var interpolateTimer = 0;
+var interpolateTimer = 0.0;
+var interpolateTimerVictory = 0.0;
 var ingameTextFontSize;
 var ingameTextPosX, ingameTextPosY;
 
 var ingameTextCounter;
-var ingametTextVictory;
+var ingameTextVictory;
 
 function initIngameText(game) {
 	ingameText = game.add.text(400, 125, '', { font: "8px Arial", fill: "#ff0000" });
@@ -28,8 +29,10 @@ function resetIngameText() {
 	ingameTextPosX = 400;
 	ingameTextPosY = 125;
 	interpolateTimer = 0.0;
+	interpolateTimerVictory = 0.0;
 	ingameText.anchor.set(0.5);
 	ingameText.text = "";
+	ingameTextVictory.text = "";
 	ingameTextCounter.text = "";
 }
 
@@ -63,6 +66,12 @@ function interpolateIngameText(dt) {
 	interpolateTimer += dt;
 }
 
-function createVictoryText() {
+function createVictoryText(dt) {
+	ingameTextVictory.text = "Mission Complete!";
 
+	if(interpolateTimerVictory <= 0.3) {
+		ingameTextFontSize = 8 + interpolateTimerVictory * 100;
+		ingameTextVictory.fontSize = ingameTextFontSize;
+	}
+	interpolateTimerVictory += dt;
 }

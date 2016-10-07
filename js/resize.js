@@ -33,6 +33,7 @@ function resize() {
 
 	scaleText(ingameText, ingameTextPosX, ingameTextPosY, ingameTextFontSize, true);
 	scaleText(ingameTextCounter, 785, 50, ingameTextFontSize, true);
+	scaleText(ingameTextVictory, 400, 125, ingameTextFontSize, true);
 
 
 	//Menu stuff

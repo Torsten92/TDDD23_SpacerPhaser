@@ -344,6 +344,7 @@ function spacerPhaser() {
 			}
 		}
 		else if(state == STATES.VICTORY) {
+			createVictoryText(dt);
 			victoryTimer -= dt;
 			if(victoryTimer < 0.0) {
 				setState(STATES.MENU, true);
