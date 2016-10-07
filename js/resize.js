@@ -18,6 +18,15 @@ function resize() {
 	scaleSprite(healthbar_front, 100, 552, 300, 16);
 	healthbar_front.cameraOffset.y = 552 * scale;
 
+	scaleSprite(shieldbar_mid, 100, 572, 300, 16);
+	shieldbar_mid.cameraOffset.y = 572 * scale;
+	
+	scaleSprite(shieldbar_super_mid, 100, 572, 300, 16);
+	shieldbar_super_mid.cameraOffset.y = 572 * scale;
+
+	scaleSprite(shieldbar_front, 100, 572, 300, 16);
+	shieldbar_front.cameraOffset.y = 572 * scale;
+
 	scaleText(weapon_text, 500, 542, 12, true);
 	scaleText(engine_text, 500, 558, 12, true);
 	scaleText(shield_text, 500, 576, 12, true);

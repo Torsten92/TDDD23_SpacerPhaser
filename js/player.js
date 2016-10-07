@@ -37,6 +37,8 @@ class Player extends GameObject {
 		this.setShieldLevel = function(val) {
 			
 			this.shieldLevel = Math.min(Math.max(val, 0), 10);
+			this.shieldMax = 40 * this.shieldLevel;
+			this.shieldTimer = 0.0;
 			shield_text.text = this.shieldLevel > 0 ? "Shield Level: " + this.shieldLevel : "";
 		}
 
@@ -45,6 +47,7 @@ class Player extends GameObject {
 			this.setWeaponLevel(weapon_level);
 			this.setEngineLevel(engine_level);
 			this.setShieldLevel(shield_level);
+			this.shield = this.shieldMax;
 		}
 	}
 

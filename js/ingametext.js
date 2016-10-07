@@ -37,7 +37,7 @@ function createIngameText(dt, type, amount, destroyed) {
 	ingameText.text = "Destroy " + amount + " " + type + "s!";
 	interpolateIngameText(dt);
 
-	if(interpolateTimer > 2.0) {
+	if(interpolateTimer > 1.5) {
 		ingameTextCounter.text = destroyed + " / " + amount;
 	}
 }

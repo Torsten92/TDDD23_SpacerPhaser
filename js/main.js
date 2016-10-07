@@ -40,6 +40,8 @@ function spacerPhaser() {
 		game.load.image('healthbar_back','sprites/menu/healthbar_back.png');
 		game.load.image('healthbar_mid','sprites/menu/healthbar_mid.png');
 		game.load.image('healthbar_front','sprites/menu/healthbar_front.png');
+		game.load.image('shieldbar_mid','sprites/menu/shieldbar_mid.png');
+		game.load.image('shieldbar_super_mid','sprites/menu/shieldbar_super_mid.png');
 		game.load.image('menu_background','sprites/menu/menu_background.png');
 		game.load.image('menu_infobox','sprites/menu/menu_infobox.png');
 		game.load.image('menu_upgradesbox','sprites/menu/menu_upgradesbox.png');
@@ -180,9 +182,13 @@ function spacerPhaser() {
 			
 			game.world.wrap(player.object, 10);
 			game.world.setBounds(player.object.x - 960, player.object.y - 960, 1920, 1920);
-			
-			//scale healthbar to show damage taken
-			healthbar_mid.scale.x = player.hp/player.hpMax * scale, 1.0 * scale;
+
+			//scale healthbar and shieldbar to show damage taken
+			healthbar_mid.scale.x = player.hp/player.hpMax * scale;
+			if(player.shieldMax > 0) {
+				shieldbar_mid.scale.x = Math.min(player.shield / 200, 1.0) * scale;
+				shieldbar_super_mid.scale.x = Math.min(Math.max(player.shield - 200, 0.0) / 200, 1.0) * scale;
+			}
 
 			//create a parallax-like effect on background
 			var xBase = player.object.x - game.world.width / 2;
@@ -201,6 +207,10 @@ function spacerPhaser() {
 					   gameObjects[id].object.y > player.object.y + 960) {
 						gameObjects[id].object.kill();
 						continue;
+					}
+
+					if(gameObjects[id].shieldMax > 0.0) {
+						gameObjects[id].regenerateShield(dt);
 					}
 
 					//handle object-object collisions
@@ -233,20 +243,11 @@ function spacerPhaser() {
 				}
 			}
 
-			//spawn new objects
-			if(Math.random() < 0.03) {
-				createObject(Asteroid, player.object.x, player.object.y);
-			}
-			if(Math.random() < 0.005) {
-				createObject(Stinger, player.object.x, player.object.y);
-			}
-			if(Math.random() < 0.001) {
-				createObject(Breaker, player.object.x, player.object.y);
-			}
-
 			//Perform level-specific computations
 			if(current_level == 1) {
 				createIngameText(dt, "Asteroid", 5, destroyedAsteroids);
+
+				if(Math.random() < 0.03) createObject(Asteroid, player.object.x, player.object.y);
 
 				if(destroyedAsteroids >= 5 && player.hp > 0.0) {
 					setState(STATES.VICTORY, true);
@@ -255,12 +256,18 @@ function spacerPhaser() {
 			if(current_level == 2) {
 				createIngameText(dt, "Stinger", 6, destroyedStingers);
 
+				if(Math.random() < 0.03) createObject(Asteroid, player.object.x, player.object.y);
+				if(Math.random() < 0.005) createObject(Stinger, player.object.x, player.object.y);
+
 				if(destroyedStingers >= 6 && player.hp > 0.0) {
 					setState(STATES.VICTORY, true);
 				}
 			}
 			if(current_level == 3) {
 				createIngameText(dt, "Stinger", 10, destroyedStingers);
+
+				if(Math.random() < 0.02) createObject(Asteroid, player.object.x, player.object.y);
+				if(Math.random() < 0.01) createObject(Stinger, player.object.x, player.object.y);
 
 				if(destroyedStingers >= 10 && player.hp > 0.0) {
 					setState(STATES.VICTORY, true);
@@ -269,6 +276,10 @@ function spacerPhaser() {
 			if(current_level == 4) {
 				createIngameText(dt, "Breaker", 3, destroyedBreakers);
 
+				if(Math.random() < 0.02) createObject(Asteroid, player.object.x, player.object.y);
+				if(Math.random() < 0.005) createObject(Stinger, player.object.x, player.object.y);
+				if(Math.random() < 0.001) createObject(Breaker, player.object.x, player.object.y);
+
 				if(destroyedBreakers >= 3 && player.hp > 0.0) {
 					setState(STATES.VICTORY, true);
 				}
@@ -276,12 +287,20 @@ function spacerPhaser() {
 			if(current_level == 5) {
 				createIngameText(dt, "Breaker", 8, destroyedBreakers);
 
+				if(Math.random() < 0.01) createObject(Asteroid, player.object.x, player.object.y);
+				if(Math.random() < 0.008) createObject(Stinger, player.object.x, player.object.y);
+				if(Math.random() < 0.003) createObject(Breaker, player.object.x, player.object.y);
+
 				if(destroyedBreakers >= 8 && player.hp > 0.0) {
 					setState(STATES.VICTORY, true);
 				}
 			}
 			if(current_level == 6) {
 				createIngameText(dt, "Destroyer", 5, destroyedDestroyers);
+
+				if(Math.random() < 0.01) createObject(Asteroid, player.object.x, player.object.y);
+				if(Math.random() < 0.01) createObject(Stinger, player.object.x, player.object.y);
+				if(Math.random() < 0.01) createObject(Breaker, player.object.x, player.object.y);
 
 				if(destroyedDestroyers >= 5 && player.hp > 0.0) {
 					setState(STATES.VICTORY, true);
@@ -303,7 +322,7 @@ function spacerPhaser() {
 		else if(state == STATES.VICTORY) {
 			victoryTimer -= dt;
 			if(victoryTimer < 0.0) {
-				setState(STATES.MENU);
+				setState(STATES.MENU, true);
 			}
 		}
 
@@ -319,17 +338,20 @@ function spacerPhaser() {
 			if(o2.key == 'laser_red') {
 				makeParticles('particle_red', o2.x, o2.y);
 				intensity = 10;
-				gameObjects[o1.name].hp = gameObjects[o1.name].hp - 10;
+				//gameObjects[o1.name].hp = gameObjects[o1.name].hp - 10;
+				gameObjects[o1.name].takeDamage(10);
 			}
 			if(o2.key == 'laser_green') {
 				makeParticles('particle_green', o2.x, o2.y);
 				intensity = 10;
-				gameObjects[o1.name].hp = gameObjects[o1.name].hp - 10;
+				//gameObjects[o1.name].hp = gameObjects[o1.name].hp - 10;
+				gameObjects[o1.name].takeDamage(10);
 			}
 			if(o2.key == 'missile') {
 				makeParticles('explosion', o2.x, o2.y, 30, 150);
 				intensity = 30;
-				gameObjects[o1.name].hp = gameObjects[o1.name].hp - 30;
+				//gameObjects[o1.name].hp = gameObjects[o1.name].hp - 30;
+				gameObjects[o1.name].takeDamage(30);
 			}
 
 			
@@ -349,8 +371,10 @@ function spacerPhaser() {
 	function objectObjectCollision(o1, o2) {
 		var intensity = 0;
 		while(gameObjects[o1.name].hp > 0 && gameObjects[o2.name].hp > 0) {
-			gameObjects[o1.name].hp -= 1;
-			gameObjects[o2.name].hp -= 1;
+			//gameObjects[o1.name].hp -= 1;
+			//gameObjects[o2.name].hp -= 1;
+			gameObjects[o1.name].takeDamage(5);
+			gameObjects[o2.name].takeDamage(5);
 			intensity++;
 		}
 		if(gameObjects[o1.name] instanceof Player || gameObjects[o2.name] instanceof Player) {
@@ -507,12 +531,12 @@ function spacerPhaser() {
 				//player switches between left-side laser and right-side
 				var angle = player.object.rotation;
 				if(player.laserSide) {
-					player.laser.trackOffset.x = Math.cos(angle)*16+Math.sin(angle)*10;
-					player.laser.trackOffset.y = Math.sin(angle)*16-Math.cos(angle)*10;
+					player.laser.trackOffset.x = Math.cos(angle)*20+Math.sin(angle)*10;
+					player.laser.trackOffset.y = Math.sin(angle)*20-Math.cos(angle)*10;
 				}
 				else {
-					player.laser.trackOffset.x = Math.cos(angle)*16-Math.sin(angle)*10;
-					player.laser.trackOffset.y = Math.sin(angle)*16+Math.cos(angle)*10;
+					player.laser.trackOffset.x = Math.cos(angle)*20-Math.sin(angle)*10;
+					player.laser.trackOffset.y = Math.sin(angle)*20+Math.cos(angle)*10;
 				}
 				player.laser.fire();
 			}

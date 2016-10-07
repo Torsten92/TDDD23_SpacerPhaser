@@ -1,7 +1,7 @@
 
 //menu objects that is resized by the function defined in resize.js
-var hud, healthbar_back, healthbar_mid, healthbar_front, weapon_text, engine_text, shield_text,
-	menu_background, menu_infobox, menu_upgradesbox, menu_levelbox, 
+var hud, healthbar_back, healthbar_mid, healthbar_front, shieldbar_mid, shieldbar_super_mid, shieldbar_front, 
+	weapon_text, engine_text, shield_text, menu_background, menu_infobox, menu_upgradesbox, menu_levelbox, 
 	menu_button_1, menu_button_2, menu_button_3, menu_button_4, menu_button_5, menu_button_6,
 	button_1_text, button_2_text, button_3_text, button_4_text, button_5_text, button_6_text,
 	pu_weapon_icon, pu_engine_icon, pu_shield_icon, puweapon_text1, pu_engine_text1, pu_shield_text1,
@@ -154,13 +154,21 @@ function createHUD(game) {
 	healthbar_back = game.add.sprite(100, 552, 'healthbar_back');
 	healthbar_mid = game.add.sprite(100, 552, 'healthbar_mid');
 	healthbar_front = game.add.sprite(100, 552, 'healthbar_front');
+	shieldbar_mid = game.add.sprite(100, 572, 'shieldbar_mid');
+	shieldbar_super_mid = game.add.sprite(100, 572, 'shieldbar_super_mid');
+	shieldbar_front = game.add.sprite(100, 572, 'healthbar_front');
+
 	weapon_text = game.add.text(500, 542, '', { font: "15px Arial", fill: "#ff0000" });
 	engine_text = game.add.text(500, 558, '', { font: "15px Arial", fill: "#ffff00" });
 	shield_text = game.add.text(500, 576, '', { font: "15px Arial", fill: "#0088ff" });
+	
 	hud.fixedToCamera = true;
 	healthbar_back.fixedToCamera = true;
 	healthbar_mid.fixedToCamera = true;
 	healthbar_front.fixedToCamera = true;
+	shieldbar_mid.fixedToCamera = true;
+	shieldbar_super_mid.fixedToCamera = true;
+	shieldbar_front.fixedToCamera = true;
 	weapon_text.fixedToCamera = true;
 	engine_text.fixedToCamera = true;
 	shield_text.fixedToCamera = true;
@@ -171,6 +179,9 @@ function killHUD() {
 	healthbar_back.kill();
 	healthbar_mid.kill();
 	healthbar_front.kill();
+	shieldbar_mid.kill();
+	shieldbar_super_mid.kill();
+	shieldbar_front.kill();
 
 	weapon_text.text = "";
 	engine_text.text = "";
@@ -182,4 +193,10 @@ function resetHUD() {
 	healthbar_back.reset(100*scale, 552*scale);
 	healthbar_mid.reset(100*scale, 552*scale);
 	healthbar_front.reset(100*scale, 552*scale);
+
+	if(shield_level > 0) {
+		shieldbar_mid.reset(100*scale, 572*scale);
+		shieldbar_super_mid.reset(100*scale, 572*scale);
+		shieldbar_front.reset(100*scale, 572*scale);
+	}
 }
