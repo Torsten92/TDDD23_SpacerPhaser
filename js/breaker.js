@@ -99,7 +99,7 @@ class Breaker extends Enemy {
 				}
 				else if(this.bulletData[i].lifetime < 5000) {
 					this.bulletData[i].lifetime += game.time.elapsed;
-					makeParticles('explosion_mini', bullet.x, bullet.y, 1, 10)
+					makeParticles('explosion_mini', bullet.x, bullet.y, 1, 10);
 					bullet.body.angularVelocity = 100*(dot(playerbulletDir, bulletDir));
 					var standardRadianBullet = bullet.rotation > 0 ? 2*Math.PI - bullet.rotation : -bullet.rotation; //phaser uses a weird radian system
 					bullet.body.velocity.x = 350*Math.cos(standardRadianBullet);

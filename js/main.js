@@ -318,6 +318,30 @@ function spacerPhaser() {
 					setState(STATES.MENU);
 				}
 			}
+			else {
+				var angle = player.object.rotation;
+				var amount = length(player.object.body.velocity) / 10;
+				if(amount > 0) {
+					makeParticles('explosion_mini', 
+						player.object.x - Math.cos(angle)*12,
+						player.object.y - Math.sin(angle)*12,
+						1, amount
+					);
+					if(amount > 20) {
+						makeParticles('explosion_mini', 
+							player.object.x - Math.cos(angle)*10 + Math.sin(angle)*10,
+							player.object.y - Math.sin(angle)*10 - Math.cos(angle)*10,
+							1, amount / 20
+						);
+						makeParticles('explosion_mini', 
+							player.object.x - Math.cos(angle)*10 - Math.sin(angle)*10,
+							player.object.y - Math.sin(angle)*10 + Math.cos(angle)*10,
+							1, amount / 20
+						);
+					}
+				}
+
+			}
 		}
 		else if(state == STATES.VICTORY) {
 			victoryTimer -= dt;
