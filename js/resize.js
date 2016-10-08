@@ -70,6 +70,15 @@ function resize() {
 	scaleText(pushield_text1, 440, 450, 14);
 	scaleText(pushield_text2, 530, 450, 14);
 
+
+	//Credits stuff
+	scaleText(creditsTextHeader, 400, 100, 36);
+	scaleText(creditsText[0], 400, 150, 20);
+	scaleText(creditsText[1], 400, 250, 20);
+	scaleText(creditsText[2], 400, 275, 20);
+	scaleText(creditsText[3], 400, 350, 20);
+
+
 }
 
 function scaleSprite(sprite, x, y, width, height) {

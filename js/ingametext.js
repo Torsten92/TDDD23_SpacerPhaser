@@ -51,10 +51,10 @@ function interpolateIngameText(dt) {
 		ingameText.fontSize = ingameTextFontSize;
 	}
 
-	//Interpolate from x = 400 to 785, and y = 125 to 30
+	//Interpolate from x = 400 to 795, and y = 125 to 30
 	if(interpolateTimer > 1.0 && interpolateTimer <= 1.5) {
 		ingameTextFontSize = 38 - 2 * 24 * (interpolateTimer - 1.0); // font size from 38 to 14
-		ingameTextPosX = 400 + 2 * 385 * (interpolateTimer - 1.0);
+		ingameTextPosX = 400 + 2 * 395 * (interpolateTimer - 1.0);
 		ingameTextPosY = 125 - 2 * 95 * (interpolateTimer - 1.0);
 		ingameText.anchor.set(0.5 + (interpolateTimer - 1.0));
 	}

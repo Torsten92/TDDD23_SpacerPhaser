@@ -7,7 +7,12 @@ var hud, healthbar_back, healthbar_mid, healthbar_front, shieldbar_mid, shieldba
 	pu_weapon_icon, pu_engine_icon, pu_shield_icon, puweapon_text1, pu_engine_text1, pu_shield_text1,
 	puweapon_text2, pu_engine_text2, pu_shield_text2;
 
+//menu pointer is handled a bit different, but pretty much the same with resize and stuff
 var menu_pointer, menu_pointer_pos;
+
+
+//Credits stuff
+var creditsTextHeader, creditsText;
 
 
 // --- Main menu ---
@@ -17,9 +22,6 @@ function createMenu(game) {
 	menu_levelbox = game.add.sprite(40,40,'menu_levelbox');
 	menu_infobox = game.add.sprite(400, 40,'menu_infobox');
 	menu_upgradesbox = game.add.sprite(400, 320,'menu_upgradesbox');
-	
-	menu_pointer_pos = 1;
-	menu_pointer = game.add.sprite(60, 65 + 70 * menu_pointer_pos,'menu_pointer');
 
 	menu_button_1 = game.add.sprite(50, 110, 'menu_button');
 	menu_button_2 = game.add.sprite(70, 180, 'menu_button');
@@ -35,18 +37,8 @@ function createMenu(game) {
 	button_5_text = game.add.text(125, 405, 'Level 5', { font: "24px Arial", fill: "#000000" });
 	button_6_text = game.add.text(125, 475, 'Level 6', { font: "24px Arial", fill: "#000000" });
 
-
-	// locked levels are transparent
-	menu_button_2.alpha = 0.2;
-	menu_button_3.alpha = 0.2;
-	menu_button_4.alpha = 0.2;
-	menu_button_5.alpha = 0.2;
-	menu_button_6.alpha = 0.2;
-	button_2_text.alpha = 0.2;
-	button_3_text.alpha = 0.2;
-	button_4_text.alpha = 0.2;
-	button_5_text.alpha = 0.2;
-	button_6_text.alpha = 0.2;
+	lockLevelsMenu();
+	menu_pointer = game.add.sprite(60, 65 + 70 * menu_pointer_pos,'menu_pointer');
 
 	puweapon_text1 = game.add.text(440, 390, 'Weapons:', { font: "14px Arial", fill: "#000000" });
 	puengine_text1 = game.add.text(440, 420, 'Engines:', { font: "14px Arial", fill: "#000000" });
@@ -59,6 +51,23 @@ function createMenu(game) {
 	puweapon_text2 = game.add.text(530, 390, 'x 0', { font: "14px Arial", fill: "#000000" });
 	puengine_text2 = game.add.text(530, 420, 'x 0', { font: "14px Arial", fill: "#000000" });
 	pushield_text2 = game.add.text(530, 450, 'x 0', { font: "14px Arial", fill: "#000000" });
+
+}
+
+function lockLevelsMenu() {
+	// locked levels are transparent
+	menu_button_2.alpha = 0.2;
+	menu_button_3.alpha = 0.2;
+	menu_button_4.alpha = 0.2;
+	menu_button_5.alpha = 0.2;
+	menu_button_6.alpha = 0.2;
+	button_2_text.alpha = 0.2;
+	button_3_text.alpha = 0.2;
+	button_4_text.alpha = 0.2;
+	button_5_text.alpha = 0.2;
+	button_6_text.alpha = 0.2;
+
+	menu_pointer_pos = 1;
 }
 
 function killMenu() {
@@ -80,6 +89,8 @@ function killMenu() {
 	button_4_text.text = "";
 	button_5_text.text = "";
 	button_6_text.text = "";
+
+	menu_pointer.kill();
 
 	puweapon_text1.text = "";
 	puweapon_text2.text = "";
@@ -112,6 +123,8 @@ function resetMenu() {
 	button_4_text.text = "Level 4";
 	button_5_text.text = "Level 5";
 	button_6_text.text = "Level 6";
+
+	menu_pointer.reset(60, 65 + 70 * menu_pointer_pos);
 
 	puweapon_text1.text = "Weapons:";
 	puweapon_text2.text = "x " + weapon_level;
@@ -199,4 +212,39 @@ function resetHUD() {
 		shieldbar_super_mid.reset(100*scale, 572*scale);
 		shieldbar_front.reset(100*scale, 572*scale);
 	}
+}
+
+
+// Credits
+
+function createCredits() {
+	creditsTextHeader = game.add.text(400, 100, '', { font: "36px Arial", fill: "#ff0000" });
+	creditsTextHeader.anchor.set(0.5);
+	creditsText = [];
+	creditsText[0] = game.add.text(400, 150, '', { font: "20px Arial", fill: "#ff0000" });
+	creditsText[1] = game.add.text(400, 250, '', { font: "20px Arial", fill: "#ff0000" });
+	creditsText[2] = game.add.text(400, 275, '', { font: "20px Arial", fill: "#ff0000" });
+	creditsText[3] = game.add.text(400, 350, '', { font: "20px Arial", fill: "#ff0000" });
+	creditsText[0].anchor.set(0.5);
+	creditsText[1].anchor.set(0.5);
+	creditsText[2].anchor.set(0.5);
+	creditsText[3].anchor.set(0.5);
+}
+
+function killCredits() {
+	menu_background.kill();
+	creditsTextHeader.text = "";
+	creditsText[0].text = "";
+	creditsText[1].text = "";
+	creditsText[2].text = "";
+	creditsText[3].text = "";
+}
+
+function resetCredits() {
+	menu_background.reset(0, 0);
+	creditsTextHeader.text = "Congratulations hero!";
+	creditsText[0].text = "You have saved the galaxy from the evil empire!";
+	creditsText[1].text = "This game was developed by Torsten Gustafsson";
+	creditsText[2].text = "for the course TDDD23 at Linköping University";
+	creditsText[3].text = "Thank you for playing Spacer Phaser! Press space to restart the game.";
 }

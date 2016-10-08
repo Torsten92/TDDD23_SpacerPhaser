@@ -13,7 +13,7 @@ var victoryTimer = 1.0;
 function spacerPhaser() {
 
 	game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update, render: render });
-	var STATES = { MENU: 0, INGAME: 1, VICTORY: 2 };
+	var STATES = { MENU: 0, INGAME: 1, VICTORY: 2, CREDITS: 3 };
 	var state = STATES.MENU;
 
 	//Loads all game resources
@@ -51,8 +51,9 @@ function spacerPhaser() {
 		game.load.image('menu_button','sprites/menu/menu_button.png');
 		game.load.image('menu_pointer','sprites/menu/menu_pointer.png');
 
-		game.load.audio('audio_menu_music', 'audio/12-death-egg.mp3');
-		game.load.audio('audio_music', 'audio/12-death-egg-act-2.mp3');
+		game.load.audio('audio_menu_music', 'audio/music_menu.mp3');
+		game.load.audio('audio_music', 'audio/music_ingame.mp3');
+		game.load.audio('audio_credits', 'audio/music_credits.mp3');
 		game.load.audio('audio_laser', 'audio/laser.wav');
 		game.load.audio('audio_missile', 'audio/missile.wav');
 		game.load.audio('audio_explosion', 'audio/explosion.wav');
@@ -69,7 +70,7 @@ function spacerPhaser() {
 	var NUM_ASTEROIDS = 10;
 	var NUM_STINGERS = 10;
 	var NUM_BREAKERS = 5;
-	var NUM_DESTROYERS = 1;
+	var NUM_DESTROYERS = 2;
 	var NUM_POWERUPS = 10;
 	var gameObjects; // contains all colliders in the scene
 	var powerups; // contains all powerups in the scene
@@ -114,9 +115,10 @@ function spacerPhaser() {
 
 		audioMenuMusic = game.add.audio('audio_menu_music');
 		audioMusic = game.add.audio('audio_music');
+		audioCredits = game.add.audio('audio_credits');
 
 		//we want to be able to play several instances of a sound at a time
-		for(var i = 0; i < 10; i++) {
+		for(var i = 0; i < 20; i++) {
 			audioLaser[i] = game.add.audio('audio_laser');
 			audioLaser[i].volume = 0.2;
 			audioMissile[i] = game.add.audio('audio_missile');
@@ -140,7 +142,7 @@ function spacerPhaser() {
 			var temp = guid();
 			gameObjects[temp] = new Stinger(game, temp);
 			gameObjects[temp].laser.onFire.add(function() {
-				audioLaserCounter = audioLaserCounter >= 9 ? 0 : audioLaserCounter+1;
+				audioLaserCounter = audioLaserCounter >= 19 ? 0 : audioLaserCounter+1;
 				audioLaser[audioLaserCounter].play();
 			});
 		}
@@ -148,17 +150,26 @@ function spacerPhaser() {
 			var temp = guid();
 			gameObjects[temp] = new Breaker(game, temp, makeParticles);
 			gameObjects[temp].laser.onFire.add(function() {
-				audioLaserCounter = audioLaserCounter >= 9 ? 0 : audioLaserCounter+1;
-				audioLaser[audioLaserCounter].play();
+				audioMissileCounter = audioMissileCounter >= 19 ? 0 : audioMissileCounter+1;
+				audioMissile[audioMissileCounter].play();
 			});
 		}
+		var destroyers = new Array(); //temporary array to be held by each destroyer
 		for(var i = 0; i < NUM_DESTROYERS; i++) {
 			var temp = guid();
 			gameObjects[temp] = new Destroyer(game, temp);
-			//gameObjects[temp].laser.onFire.add(function() {
-			//	audioMissileCounter = audioMissileCounter >= 9 ? 0 : audioMissileCounter+1;
-			//	audioMissile[audioMissileCounter].play();
-			//});
+			
+			//only the two middle cannons make sound
+			gameObjects[temp].cannons[1].laser.onFire.add(function() {
+				audioLaserCounter = audioLaserCounter >= 19 ? 0 : audioLaserCounter+1;
+				audioLaser[audioLaserCounter].play();
+			});
+			gameObjects[temp].cannons[4].laser.onFire.add(function() {
+				audioLaserCounter = audioLaserCounter >= 19 ? 0 : audioLaserCounter+1;
+				audioLaser[audioLaserCounter].play();
+			});
+			destroyers[temp] = gameObjects[temp];
+			gameObjects[temp].otherDestroyers = destroyers;
 		}
 
 		//create all powerups
@@ -169,12 +180,16 @@ function spacerPhaser() {
 
 		player.laser.onFire.add(function() {
 			player.laserSide = player.laserSide ? false : true;
-			audioLaserCounter = audioLaserCounter >= 9 ? 0 : audioLaserCounter+1;
+			audioLaserCounter = audioLaserCounter >= 19 ? 0 : audioLaserCounter+1;
 			audioLaser[audioLaserCounter].play();
 		});
 
+		//declared in menu.js
 		createMenu(game);
 		createHUD(game);
+		createCredits(game);
+		
+		//declared in ingametext.js
 		initIngameText(game);
 
 		setState(STATES.MENU);
@@ -244,6 +259,9 @@ function spacerPhaser() {
 				else if(gameObjects[id] instanceof Breaker) {
 					gameObjects[id].removeAllMissiles();
 				}
+				else if(gameObjects[id] instanceof Destroyer) {
+					gameObjects[id].removeCannons();
+				}
 			}
 
 			//handle all powerups
@@ -258,8 +276,7 @@ function spacerPhaser() {
 				createIngameText(dt, "Asteroid", 5, destroyedAsteroids);
 
 				if(Math.random() < 0.03) createObject(Asteroid, player.object.x, player.object.y);
-				if(Math.random() < 0.03) createObject(Destroyer, player.object.x, player.object.y);
-
+				
 				if(destroyedAsteroids >= 5 && player.hp > 0.0) {
 					setState(STATES.VICTORY, true);
 				}
@@ -310,10 +327,12 @@ function spacerPhaser() {
 				createIngameText(dt, "Destroyer", 5, destroyedDestroyers);
 
 				if(Math.random() < 0.01) createObject(Asteroid, player.object.x, player.object.y);
-				if(Math.random() < 0.01) createObject(Stinger, player.object.x, player.object.y);
-				if(Math.random() < 0.01) createObject(Breaker, player.object.x, player.object.y);
+				if(Math.random() < 0.008) createObject(Stinger, player.object.x, player.object.y);
+				if(Math.random() < 0.005) createObject(Breaker, player.object.x, player.object.y);
+				if(Math.random() < 0.003) createObject(Destroyer, player.object.x, player.object.y);
 
-				if(destroyedDestroyers >= 5 && player.hp > 0.0) {
+
+				if(destroyedDestroyers >= 1 && player.hp > 0.0) {
 					setState(STATES.VICTORY, true);
 				}
 			}
@@ -359,7 +378,15 @@ function spacerPhaser() {
 			victoryTimer -= dt;
 			if(victoryTimer < 0.0) {
 				setState(STATES.MENU, true);
+
+				//Check if game complete
+				if(level_unlocked > 6) {
+					setState(STATES.CREDITS);
+				}
 			}
+		}
+		else if(state == STATES.CREDITS) {
+			//do nothing
 		}
 
 		//input handling is always performed
@@ -453,6 +480,7 @@ function spacerPhaser() {
 		}
 		if(gameObjects[o.name] instanceof Destroyer) {
 			destroyedDestroyers++;
+			gameObjects[o.name].removeCannons(); // quick fix to prevent a mission complete bug
 		}
 	}
 
@@ -469,7 +497,6 @@ function spacerPhaser() {
 			audioExplosion[audioExplosionCounter].play();
 		}
 	}
-
 
 	//Create a new object of the specified type if there is an empty slot in the corresponding object pool
 	function createObject(type, playerX, playerY) {
@@ -580,6 +607,16 @@ function spacerPhaser() {
 				player.laser.fire();
 			}
 		}
+		else if(state == STATES.CREDITS) {
+			if(!menuKeyDown && fireButton.isDown) {
+				resetStats();
+				setState(STATES.MENU);
+			}
+			else if(!cursors.down.isDown && !buttonS.isDown && !cursors.up.isDown && !buttonW.isDown && 
+					!fireButton.isDown) {
+				menuKeyDown = false;
+			}
+		}
 	}
 
 	//Changes the current game state. The win variable tells if player just won a level.
@@ -588,7 +625,8 @@ function spacerPhaser() {
 
 		if(val == STATES.MENU) {
 			menuKeyDown = true; // to prevent accidental instant restart
-			audioMusic.pause();
+			audioMusic.stop();
+			audioCredits.stop();
 			audioMenuMusic.play('', 0, 0.2, true, true);
 			game.world.setBounds(0, 0, 1920, 1920);
 			game.camera.reset();
@@ -603,6 +641,7 @@ function spacerPhaser() {
 			}
 
 			killHUD();
+			killCredits();
 			resetMenu();
 
 			for(var id in gameObjects) {
@@ -630,7 +669,8 @@ function spacerPhaser() {
 		}
 
 		if(val == STATES.INGAME) {
-			audioMenuMusic.pause();
+			audioMenuMusic.stop();
+			audioCredits.stop();
 			audioMusic.play('', 0, 0.2, true, true);
 			deathTimer = 0.75;
 			victoryTimer = 1.0;
@@ -644,7 +684,18 @@ function spacerPhaser() {
 			destroyedDestroyers = 0;
 
 			killMenu();
+			killCredits();
 			resetHUD();
+		}
+
+		if(val == STATES.CREDITS) {
+			audioMenuMusic.stop();
+			audioMusic.stop();
+			audioCredits.play('', 0, 0.2, true, true);
+
+			killMenu();
+			killHUD();
+			resetCredits();
 		}
 
 		state = val;
