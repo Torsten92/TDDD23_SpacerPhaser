@@ -332,7 +332,7 @@ function spacerPhaser() {
 				if(Math.random() < 0.003) createObject(Destroyer, player.object.x, player.object.y);
 
 
-				if(destroyedDestroyers >= 1 && player.hp > 0.0) {
+				if(destroyedDestroyers >= 5 && player.hp > 0.0) {
 					setState(STATES.VICTORY, true);
 				}
 			}
